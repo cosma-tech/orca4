@@ -49,6 +49,65 @@
         <update_rate>1000.0</update_rate>
       </sensor>
 
+      <sensor name='altimeter' type='gpu_lidar'>"
+          <pose relative_to='altimeter_frame'>0 0 0 0 0 0</pose>
+          <topic>altimeter</topic>
+          <update_rate>10</update_rate>
+          <ray>
+              <scan>
+                  <horizontal>
+                      <samples>1</samples>
+                      <resolution>1</resolution>
+                      <min_angle>-0.01</min_angle>
+                      <max_angle>0.01</max_angle>
+                  </horizontal>
+                  <vertical>
+                      <samples>1</samples>
+                      <resolution>0.01</resolution>
+                      <min_angle>0</min_angle>
+                      <max_angle>0</max_angle>
+                  </vertical>
+              </scan>
+              <range>
+                  <min>0.08</min>
+                  <max>10.0</max>
+                  <resolution>0.01</resolution>
+              </range>
+          </ray>
+          <always_on>1</always_on>
+          <visualize>true</visualize>
+      </sensor>
+
+      <sensor name='oa_sensor' type='gpu_lidar'>"
+          <pose relative_to='oa_sensor_frame'>0 0 0 0 0 0</pose>
+          <topic>oa_sensor</topic>
+          <update_rate>10</update_rate>
+          <ray>
+              <scan>
+                  <horizontal>
+                      <samples>25</samples>
+                      <resolution>1</resolution>
+                      <min_angle>-0.21</min_angle>
+                      <max_angle>0.21</max_angle>
+                  </horizontal>
+                  <vertical>
+                      <samples>25</samples>
+                      <resolution>1</resolution>
+                      <min_angle>-0.21</min_angle>
+                      <max_angle>0.21</max_angle>
+                  </vertical>
+              </scan>
+              <range>
+                  <min>0.08</min>
+                  <max>100.0</max>
+                  <resolution>0.01</resolution>
+              </range>
+          </ray>
+          <always_on>1</always_on>
+          <visualize>true</visualize>
+      </sensor>
+
+
     </link>
 
     <!-- Hydrodynamics plugin -->
@@ -359,6 +418,13 @@
       <!-- Sensors -->
       <imuName>imu_sensor</imuName>
 
+      <sensor name="oa_sensor">
+        <type>1</type>
+        <index>1</index>
+        <topic>oa_sensor</topic>
+      </sensor>
+
+
       <!-- Thrusters -->
       <control channel="0">
         <jointName>thruster1_joint</jointName>
@@ -525,6 +591,15 @@
       <robot_base_frame>orca4</robot_base_frame>
       <dimensions>3</dimensions>
     </plugin>
+
+    <frame name="altimeter_frame" attached_to='base_link'>
+        <pose>0 0 -0.25 0 1.5708 0</pose>
+    </frame>
+
+    <frame name="oa_sensor_frame" attached_to='base_link'>
+        <pose>0.15 0 -0.25 0 0.785 0</pose>
+    </frame>
+
 
   </model>
 </sdf>

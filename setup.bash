@@ -11,7 +11,7 @@ if [[ -z "${ARDUPILOT_HOME}" ]]; then
 fi
 
 if [[ -z "${COLCON_WS}" ]]; then
-  export COLCON_WS="$HOME/colcon_ws"
+  export COLCON_WS=$(pwd)
 fi
 
 
