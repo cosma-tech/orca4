@@ -107,6 +107,13 @@
           <visualize>true</visualize>
       </sensor>
 
+    <sensor name="navsat" type="navsat">
+      <pose relative_to='navsat_frame'>0 0 0 0 0 0</pose>
+      <always_on>1</always_on>
+      <update_rate>1</update_rate>
+      <topic>gps</topic>
+    </sensor>
+
 
     </link>
 
@@ -592,12 +599,17 @@
       <dimensions>3</dimensions>
     </plugin>
 
+
     <frame name="altimeter_frame" attached_to='base_link'>
         <pose>0 0 -0.25 0 1.5708 0</pose>
     </frame>
 
     <frame name="oa_sensor_frame" attached_to='base_link'>
         <pose>0.15 0 -0.25 0 0.785 0</pose>
+    </frame>
+
+    <frame name="navsat_frame" attached_to='base_link'>
+        <pose>0 0 0 0 0 0</pose>
     </frame>
 
 
