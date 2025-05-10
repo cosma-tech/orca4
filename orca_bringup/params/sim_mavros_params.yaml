@@ -28,6 +28,7 @@ mavros:
       - rc_io
       - setpoint_position
       - vision_pose
+      - gps_input
 
 mavros_node:
   ros__parameters:

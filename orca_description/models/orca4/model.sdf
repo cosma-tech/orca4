@@ -110,7 +110,7 @@
     <sensor name="navsat" type="navsat">
       <pose relative_to='navsat_frame'>0 0 0 0 0 0</pose>
       <always_on>1</always_on>
-      <update_rate>1</update_rate>
+      <update_rate>5</update_rate>
       <topic>gps</topic>
     </sensor>
 
