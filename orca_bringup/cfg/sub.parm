@@ -86,16 +86,26 @@ BARO_EXT_BUS 1
 
 # Enable external nav
 # From https://ardupilot.org/copter/docs/common-vio-tracking-camera.html
-GPS_TYPE 0            # Disable GPS
+GPS1_TYPE 14            # Disable GPS
+#SIM_GPS1_TYPE 1
 VISO_TYPE 1           # External vision
-EK3_SRC1_POSXY 6      # External nav
-EK3_SRC1_VELXY 6      # External nav
+EK3_SRC1_POSXY 3      # External nav
+EK3_SRC1_VELXY 3      # External nav
 EK3_SRC1_POSZ 1       # Baro is the primary z source
 EK3_SRC1_VELZ 0       # None
-COMPASS_USE 0         # Disable compass 1
-COMPASS_USE2 0        # Disable compass 2
-COMPASS_USE3 0        # Disable compass 3
-EK3_SRC1_YAW 6        # External nav
+EK3_SRC1_YAW 1        # External nav
+
+COMPASS_USE 1         # Disable compass 1
+COMPASS_USE2 1        # Disable compass 2
+COMPASS_USE3 1        # Disable compass 3
+
+EK3_SRC2_POSXY 6      # External nav
+EK3_SRC2_VELXY 6      # External nav
+EK3_SRC2_POSZ 1       # Baro is the primary z source
+EK3_SRC2_VELZ 0       # None
+EK3_SRC2_YAW 6        # External nav
+
+
 
 # Reduce simulated barometer noise
 SIM_BARO_RND 0.02
