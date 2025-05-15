@@ -29,6 +29,7 @@ mavros:
       - setpoint_position
       - vision_pose
       - gps_input
+      - distance_sensor
 
 mavros_node:
   ros__parameters:
@@ -45,3 +46,11 @@ mavros/vision_pose:
   ros__parameters:
     tf:
       listen: false  # Do not listen to tf
+
+mavros/distance_sensor:
+  ros__parameters:
+    config: |
+      altimeter_sub:
+        subscriber: true
+        id: 0
+        orientation: PITCH_270

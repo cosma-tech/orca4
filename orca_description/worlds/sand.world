@@ -123,12 +123,11 @@
 
 
 <spherical_coordinates>
-  <surface_model>EARTH_WGS84</surface_model>
-  <world_frame_orientation>ENU</world_frame_orientation>
-  <latitude_deg>43.68911139807929</latitude_deg>
-  <longitude_deg>7.2902613206290106</longitude_deg>
-  <elevation>0</elevation>
+  <latitude_deg>43.69022190857604</latitude_deg>
+  <longitude_deg>7.288625408827885</longitude_deg>
+  <elevation>584</elevation>
   <heading_deg>0</heading_deg>
+  <surface_model>EARTH_WGS84</surface_model>
 </spherical_coordinates>
 
 
