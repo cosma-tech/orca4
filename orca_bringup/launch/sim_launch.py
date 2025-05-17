@@ -208,8 +208,8 @@ def generate_launch_description():
             executable='parameter_bridge',
             arguments=[
                 '/model/orca4/odometry@nav_msgs/msg/Odometry[gz.msgs.Odometry',
-                '/altimeter@sensor_msgs/msg/LaserScan[gz.msgs.LaserScan',
-                '/gps@sensor_msgs/msg/NavSatFix[gz.msgs.NavSat',
+                '/model/orca4/altimeter@sensor_msgs/msg/LaserScan[gz.msgs.LaserScan',
+                '/model/orca4/gps@sensor_msgs/msg/NavSatFix[gz.msgs.NavSat',
             ],
             output='screen'
         ),

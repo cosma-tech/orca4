@@ -50,7 +50,14 @@ mavros/vision_pose:
 mavros/distance_sensor:
   ros__parameters:
     config: |
-      altimeter_sub:
+      altimeter:
         subscriber: true
         id: 0
         orientation: PITCH_270
+      oa_sensor_raw:
+        id: 1
+        orientation: NONE
+        frame_id: "base"
+        field_of_view: 0.0  # XXX TODO
+        send_tf: false
+        sensor_position: {x:  0.0, y:  0.0, z: 0.0}

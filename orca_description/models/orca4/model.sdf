@@ -51,7 +51,7 @@
 
       <sensor name='altimeter' type='gpu_lidar'>"
           <pose relative_to='altimeter_frame'>0 0 0 0 0 0</pose>
-          <topic>altimeter</topic>
+          <topic>model/orca4/altimeter</topic>
           <update_rate>10</update_rate>
           <ray>
               <scan>
@@ -80,7 +80,7 @@
 
       <sensor name='oa_sensor' type='gpu_lidar'>"
           <pose relative_to='oa_sensor_frame'>0 0 0 0 0 0</pose>
-          <topic>oa_sensor</topic>
+          <topic>model/orca4/oa_sensor</topic>
           <update_rate>10</update_rate>
           <ray>
               <scan>
@@ -425,10 +425,16 @@
       <!-- Sensors -->
       <imuName>imu_sensor</imuName>
 
-      <sensor name="oa_sensor">
+      <sensor name="altimeter">
         <type>1</type>
         <index>1</index>
-        <topic>oa_sensor</topic>
+        <topic>model/orca4/altimeter</topic>
+      </sensor>
+
+      <sensor name="oa_sensor">
+        <type>1</type>
+        <index>2</index>
+        <topic>model/orca4/oa_sensor</topic>
       </sensor>
 
 
