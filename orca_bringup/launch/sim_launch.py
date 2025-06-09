@@ -214,6 +214,28 @@ def generate_launch_description():
             output='screen'
         ),
 
+        Node(
+            package='auv_simulation',
+            executable='altimeter_reading',
+            name='altimeter_reading',
+            output='screen',
+        ),
+
+
+        
+        # Include AUV launch file
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(
+                os.path.join(get_package_share_directory('auv'), 'launch', 'launch_auv.py')
+            ),
+            launch_arguments={
+                'altimeter_reading': 'false',
+                'mavros_node': 'true',
+            }.items(),
+        ),
+                
+
+
         # Bring up Orca and Nav2 nodes
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(os.path.join(orca_bringup_dir, 'launch', 'bringup.py')),
