@@ -71,12 +71,12 @@
 
     <model name="rectangular_obstacle_1">
       <static>true</static>
-      <pose>75 0 -7.5 0 0 -0.785398</pose>
+      <pose>25 -25 -7.5 0 0 -0.785398</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
             <box>
-              <size>5 150 5</size>
+              <size>5 250 5</size>
             </box>
           </geometry>
         </collision>
