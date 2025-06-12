@@ -101,6 +101,12 @@ def generate_launch_description():
             description='Launch SLAM?',
         ),
 
+        DeclareLaunchArgument(
+            'auv',
+            default_value='True',
+            description='Launch AUV nodes?',
+        ),
+
         # Bag useful topics
         ExecuteProcess(
             cmd=[
@@ -232,6 +238,7 @@ def generate_launch_description():
                 'altimeter_reading': 'false',
                 'mavros_node': 'true',
             }.items(),
+            condition=IfCondition(LaunchConfiguration('auv')),
         ),
                 
 
