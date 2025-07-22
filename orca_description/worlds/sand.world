@@ -123,7 +123,7 @@
 
     <model name="usv">
       <static>true</static>
-      <pose>0 0 0.2 0 0 0</pose>
+      <pose>10 0 0.2 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
