@@ -27,9 +27,11 @@ mavros:
       - local_position
       - rc_io
       - setpoint_position
+      - setpoint_raw
       - vision_pose
       - gps_input
       - distance_sensor
+      - global_position
 
 mavros_node:
   ros__parameters:

@@ -68,6 +68,11 @@
      <pose>0 0 0.2 0 0 0</pose>
     </include>
 
+    <include>
+      <uri>model://usv</uri>
+      <pose>10 0 0.2 0 0 0</pose>
+      <static>true</static>
+    </include>
 
     <model name="rectangular_obstacle_1">
       <static>true</static>
@@ -116,33 +121,6 @@
             <ambient>0.3 0.3 0.3 1</ambient>
             <diffuse>0.7 0.7 0.7 1</diffuse>
             <specular>0.01 0.01 0.01 1</specular>
-          </material>
-        </visual>
-      </link>
-    </model>
-
-    <model name="usv">
-      <static>true</static>
-      <pose>10 0 0.2 0 0 0</pose>
-      <link name="link">
-        <collision name="collision">
-          <geometry>
-            <sphere>
-              <radius>0.5</radius>
-            </sphere>
-          </geometry>
-        </collision>
-        <visual name="visual">
-          <geometry>
-            <sphere>
-              <radius>0.2</radius>
-            </sphere>
-          </geometry>
-          <material>
-            <ambient>1 0 0 1</ambient>
-            <diffuse>1 0 0 1</diffuse>
-            <specular>0.5 0.5 0.5 1</specular>
-            <emissive>0 0 0 1</emissive>
           </material>
         </visual>
       </link>

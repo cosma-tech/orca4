@@ -216,6 +216,9 @@ def generate_launch_description():
                 '/model/orca4/odometry@nav_msgs/msg/Odometry[gz.msgs.Odometry',
                 '/model/orca4/altimeter@sensor_msgs/msg/LaserScan[gz.msgs.LaserScan',
                 '/model/orca4/gps@sensor_msgs/msg/NavSatFix[gz.msgs.NavSat',
+
+                '/model/usv/odometry@nav_msgs/msg/Odometry[gz.msgs.Odometry',
+                '/usv/pose@geometry_msgs/msg/Pose@gz.msgs.Pose'
             ],
             output='screen'
         ),
