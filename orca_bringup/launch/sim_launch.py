@@ -107,6 +107,12 @@ def generate_launch_description():
             description='Launch AUV nodes?',
         ),
 
+        DeclareLaunchArgument(
+            'usb',
+            default_value='True',
+            description='Launch USB simulation node?',
+        ),
+
         # Bag useful topics
         ExecuteProcess(
             cmd=[
@@ -230,6 +236,12 @@ def generate_launch_description():
             output='screen',
         ),
 
+        Node(
+            package='auv_simulation',
+            executable='usbl',
+            name='usbl',
+            output='screen',
+        ),
 
         
         # Include AUV launch file
