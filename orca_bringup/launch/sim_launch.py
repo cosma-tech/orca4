@@ -125,7 +125,7 @@ def generate_launch_description():
                 '/mavros/setpoint_position/global',
                 '/mavros/state',
                 '/mavros/vision_pose/pose',
-                '/model/orca4/odometry',
+                '/model/orca4_heavy/odometry',
                 '/motion',
                 '/odom',
                 '/orb_slam2_stereo_node/pose',
@@ -219,9 +219,9 @@ def generate_launch_description():
             package='ros_gz_bridge',
             executable='parameter_bridge',
             arguments=[
-                '/model/orca4/odometry@nav_msgs/msg/Odometry[gz.msgs.Odometry',
-                '/model/orca4/altimeter@sensor_msgs/msg/LaserScan[gz.msgs.LaserScan',
-                '/model/orca4/gps@sensor_msgs/msg/NavSatFix[gz.msgs.NavSat',
+                '/model/orca4_heavy/odometry@nav_msgs/msg/Odometry[gz.msgs.Odometry',
+                '/model/orca4_heavy/altimeter@sensor_msgs/msg/LaserScan[gz.msgs.LaserScan',
+                '/model/orca4_heavy/gps@sensor_msgs/msg/NavSatFix[gz.msgs.NavSat',
 
                 '/model/usv/odometry@nav_msgs/msg/Odometry[gz.msgs.Odometry',
                 '/usv/pose@geometry_msgs/msg/Pose@gz.msgs.Pose'
