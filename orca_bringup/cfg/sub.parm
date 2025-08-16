@@ -106,3 +106,18 @@ EK3_SRC2_YAW 6        # External nav
 
 # Reduce simulated barometer noise
 SIM_BARO_RND 0.02
+
+
+# Moderate rotation of the vehicle
+ATC_ACCEL_R_MAX 30000
+ATC_ACCEL_P_MAX 30000
+ATC_ACCEL_Y_MAX 9000
+
+ATC_RATE_R_MAX 60
+ATC_RATE_P_MAX 60
+ATC_RATE_Y_MAX 60
+
+
+
+
+COMPASS_AUTODEC 0

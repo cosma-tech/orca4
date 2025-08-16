@@ -108,9 +108,9 @@ def generate_launch_description():
         ),
 
         DeclareLaunchArgument(
-            'usb',
+            'usbl',
             default_value='True',
-            description='Launch USB simulation node?',
+            description='Launch USBL simulation node?',
         ),
 
         # Bag useful topics
@@ -241,6 +241,7 @@ def generate_launch_description():
             executable='usbl',
             name='usbl',
             output='screen',
+            condition=IfCondition(LaunchConfiguration('usbl')),
         ),
 
         
