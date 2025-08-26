@@ -70,7 +70,7 @@
 
     <include>
       <uri>model://usv</uri>
-      <pose>10 0 0.2 0 0 0</pose>
+      <pose>10 0 0 0 0 0</pose>
       <static>true</static>
     </include>
 

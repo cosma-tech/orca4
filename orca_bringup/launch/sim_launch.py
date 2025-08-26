@@ -36,12 +36,13 @@ from launch.actions import DeclareLaunchArgument, ExecuteProcess, IncludeLaunchD
 from launch.conditions import IfCondition, UnlessCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
-from launch_ros.actions import Node
+from launch_ros.actions import Node, SetParameter
 
 
 def generate_launch_description():
     orca_bringup_dir = get_package_share_directory('orca_bringup')
     orca_description_dir = get_package_share_directory('orca_description')
+    auv_dir = get_package_share_directory('auv')
 
     ardusub_params_file = os.path.join(orca_bringup_dir, 'cfg', 'sub.parm')
     mavros_params_file = os.path.join(orca_bringup_dir, 'params', 'sim_mavros_params.yaml')
@@ -50,9 +51,14 @@ def generate_launch_description():
     rviz_file = os.path.join(orca_bringup_dir, 'cfg', 'sim_launch.rviz')
     world_file = os.path.join(orca_description_dir, 'worlds', 'sand.world')
 
+    auv_params_file = os.path.join(auv_dir, 'params', 'auv_params.yaml')
+
     sim_left_ini = os.path.join(orca_bringup_dir, 'cfg', 'sim_left.ini')
     sim_right_ini = os.path.join(orca_bringup_dir, 'cfg', 'sim_right.ini')
     return LaunchDescription([
+
+        SetParameter(name='use_sim_time', value=False),
+
         DeclareLaunchArgument(
             'ardusub',
             default_value='True',
@@ -224,7 +230,9 @@ def generate_launch_description():
                 '/model/orca4_heavy/gps@sensor_msgs/msg/NavSatFix[gz.msgs.NavSat',
 
                 '/model/usv/odometry@nav_msgs/msg/Odometry[gz.msgs.Odometry',
-                '/usv/pose@geometry_msgs/msg/Pose@gz.msgs.Pose'
+                '/usv/pose@geometry_msgs/msg/Pose@gz.msgs.Pose',
+
+                '/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock',
             ],
             output='screen'
         ),
@@ -239,8 +247,8 @@ def generate_launch_description():
         Node(
             package='auv_simulation',
             executable='usbl',
-            name='usbl',
             output='screen',
+            parameters=[auv_params_file],
             condition=IfCondition(LaunchConfiguration('usbl')),
         ),
 
