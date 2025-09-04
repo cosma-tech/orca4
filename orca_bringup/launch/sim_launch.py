@@ -246,7 +246,7 @@ def generate_launch_description():
 
         Node(
             package='auv_simulation',
-            executable='usbl',
+            executable='usbl_reading',
             output='screen',
             parameters=[auv_params_file],
             condition=IfCondition(LaunchConfiguration('usbl')),
