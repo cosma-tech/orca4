@@ -57,7 +57,7 @@ def generate_launch_description():
     sim_right_ini = os.path.join(orca_bringup_dir, 'cfg', 'sim_right.ini')
     return LaunchDescription([
 
-        SetParameter(name='use_sim_time', value=False),
+        SetParameter(name='use_sim_time', value=True),
 
         DeclareLaunchArgument(
             'ardusub',
