@@ -143,7 +143,7 @@ def generate_launch_description():
         # Replacement for base_controller: complete the tf tree
         ExecuteProcess(
             cmd=['/opt/ros/humble/lib/tf2_ros/static_transform_publisher',
-                 '--frame-id', 'map',
+                 '--frame-id', 'base_link',
                  '--child-frame-id', 'slam'],
             output='screen',
             condition=UnlessCondition(LaunchConfiguration('base')),
@@ -157,13 +157,13 @@ def generate_launch_description():
             condition=UnlessCondition(LaunchConfiguration('base')),
         ),
 
-        ExecuteProcess(
-            cmd=['/opt/ros/humble/lib/tf2_ros/static_transform_publisher',
-                 '--frame-id', 'odom',
-                 '--child-frame-id', 'base_link'],
-            output='screen',
-            condition=UnlessCondition(LaunchConfiguration('base')),
-        ),
+        #ExecuteProcess(
+        #    cmd=['/opt/ros/humble/lib/tf2_ros/static_transform_publisher',
+        #         '--frame-id', 'odom',
+        #         '--child-frame-id', 'base_link'],
+        #    output='screen',
+        #    condition=UnlessCondition(LaunchConfiguration('base')),
+        #),
 
         # Replacement for an URDF file: base_link->left_camera_link is static
         ExecuteProcess(
