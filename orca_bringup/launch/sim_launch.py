@@ -119,6 +119,12 @@ def generate_launch_description():
             description='Launch USBL simulation node?',
         ),
 
+        DeclareLaunchArgument(
+            'jetson',
+            default_value='True',
+            description='Launch Jetson simulation node?',
+        ),
+
         # Bag useful topics
         ExecuteProcess(
             cmd=[
@@ -252,7 +258,14 @@ def generate_launch_description():
             condition=IfCondition(LaunchConfiguration('usbl')),
         ),
 
-        
+        Node(
+            package='auv_simulation',
+            executable='jetson',
+            output='screen',
+            parameters=[auv_params_file],
+            condition=IfCondition(LaunchConfiguration('jetson')),
+        ),
+
         # Include AUV launch file
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
