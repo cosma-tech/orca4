@@ -16,18 +16,22 @@ fi
 
 # Specific for NVIDIA drivers, required for OpenGL >= 3.3
 docker run -it \
-    --rm \
-    --name orca4 \
+    --name cosma_auv_sim \
     -e DISPLAY \
     -e QT_X11_NO_MITSHM=1 \
     -e XAUTHORITY=$XAUTH \
-    -e NVIDIA_VISIBLE_DEVICES=all \
-    -e NVIDIA_DRIVER_CAPABILITIES=all \
     -v "$XAUTH:$XAUTH" \
     -v "/tmp/.X11-unix:/tmp/.X11-unix" \
     -v "/etc/localtime:/etc/localtime:ro" \
     -v "/dev/input:/dev/input" \
     --privileged \
     --security-opt seccomp=unconfined \
-    --gpus all \
-    orca4:latest
+    --network host \
+    --ipc host \
+    --pid host \
+    -v ~/swarm-vehicle:/home/cosma_auv/swarm-vehicle \
+    cosma_auv_sim:latest
+
+#    -e NVIDIA_VISIBLE_DEVICES=all \
+#    -e NVIDIA_DRIVER_CAPABILITIES=all \
+#    --gpus all \

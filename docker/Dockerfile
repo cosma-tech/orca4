@@ -1,6 +1,6 @@
 FROM osrf/ros:humble-desktop AS base
 
-ARG USERNAME=orca4
+ARG USERNAME=cosma_auv
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 ARG DEBIAN_FRONTEND=noninteractive
@@ -22,7 +22,9 @@ RUN apt-get update \
     sudo \
     wget \
     vim \
+    ros-humble-tf-transformations \
   && rm -rf /var/lib/apt/lists/*
+
 
 # Install Gazebo Harmonic for use with ROS2 Humble
 RUN wget https://packages.osrfoundation.org/gazebo.gpg -O /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg
@@ -32,20 +34,6 @@ RUN apt-get update \
     gz-harmonic \
     ros-humble-ros-gzharmonic \
   && rm -rf /var/lib/apt/lists/*
-
-# Install NVIDIA software
-RUN apt-get update \
- && apt-get -y --quiet --no-install-recommends install \
-    libglvnd0 \
-    libgl1 \
-    libglx0 \
-    libegl1 \
-    libxext6 \
-    libx11-6 \
-  && rm -rf /var/lib/apt/lists/* \
-ENV NVIDIA_VISIBLE_DEVICES=all
-ENV NVIDIA_DRIVER_CAPABILITIES=graphics,utility,compute
-ENV QT_X11_NO_MITSHM=1
 
 # Install some ardupilot and ardupilot_gazebo prereqs (libgz-sim8-dev is for gz harmonic)
 RUN apt-get update \
@@ -108,61 +96,29 @@ RUN [ "/bin/bash" , "-c" , " \
   && cmake .. -DCMAKE_BUILD_TYPE=RelWithDebInfo \
   && make -j4" ]
 
-# Break orca4 build into multiple stages to speed up 'docker build':
-# -- work that depends on workspace.repos
-# -- work that depends on orca4 package.xml files
-# -- everything else
-
-# Create colcon workspace and copy workspace.repos file
-WORKDIR /home/$USERNAME
-RUN mkdir -p colcon_ws/src/orca4
-COPY --chown=$USER_UID:$USER_GID workspace.repos colcon_ws/src/orca4
-
-# Get workspace repos
-WORKDIR /home/$USERNAME/colcon_ws/src
-RUN vcs import < orca4/workspace.repos
-
-# Run rosdep over workspace repos
-WORKDIR /home/$USERNAME/colcon_ws
-RUN rosdep update \
-  && rosdep install -y --from-paths . --ignore-src
-
-# Build everything so far
-RUN [ "/bin/bash" , "-c" , "\
-  source /opt/ros/humble/setup.bash \
-  && colcon build" ]
-
-# Copy orca4 package.xml files
-COPY --chown=$USER_UID:$USER_GID orca_base/package.xml src/orca4/orca_base/
-COPY --chown=$USER_UID:$USER_GID orca_bringup/package.xml src/orca4/orca_bringup/
-COPY --chown=$USER_UID:$USER_GID orca_description/package.xml src/orca4/orca_description/
-COPY --chown=$USER_UID:$USER_GID orca_msgs/package.xml src/orca4/orca_msgs/
-COPY --chown=$USER_UID:$USER_GID orca_nav2/package.xml src/orca4/orca_nav2/
-COPY --chown=$USER_UID:$USER_GID orca_shared/package.xml src/orca4/orca_shared/
-
-# Run rosdep over orca4 package.xml files
-RUN rosdep update \
-  && rosdep install -y --from-paths . --ignore-src
-
 # MAVROS depends on GeographicLib, and GeographicLib needs some datasets
 RUN [ "/bin/bash" , "-c" , "\
   wget https://raw.githubusercontent.com/mavlink/mavros/master/mavros/scripts/install_geographiclib_datasets.sh \
   && chmod +x install_geographiclib_datasets.sh \
   && sudo ./install_geographiclib_datasets.sh" ]
 
-# Copy everything
-COPY --chown=$USER_UID:$USER_GID . src/orca4
+# Fix for the bug with setuptools: https://github.com/ros2/ros2/issues/1702
+RUN python3 -m pip install setuptools==58.2.0
 
-# Build everything
-RUN [ "/bin/bash" , "-c" , "\
-  source /opt/ros/humble/setup.bash \
-  && colcon build" ]
+# Set up environment variables
+ENV ROS_DOMAIN_ID=0
+ENV PYTHONUNBUFFERED=1
 
-# Set up the environment
-WORKDIR /home/$USERNAME/colcon_ws
-RUN echo "export PATH=/home/$USERNAME/.local/bin:\$PATH" >> /home/$USERNAME/.bashrc \
-  && echo "export PATH=/home/$USERNAME/.local/lib/python3.10/site-packages:\$PATH" >> /home/$USERNAME/.bashrc \
-  && echo "source /home/$USERNAME/colcon_ws/src/orca4/setup.bash" >> /home/$USERNAME/.bashrc
+COPY entrypoint.sh /entrypoint.sh
+RUN sudo chmod +x /entrypoint.sh
+RUN sudo mkdir -p /etc/dds
+COPY super_client_configuration_file.xml /etc/dds/super_client_configuration_file.xml
 
-# Required to use the --console option on sim_vehicle.py:
-# RUN pip3 install matplotlib
+# Set working directory
+WORKDIR /home/cosma_auv/swarm-vehicle/ros2_ws
+
+# In the entrypoint script we start ROS2 Discovery Server on the given IP address
+# The address is passed as an argument with docker run/start command
+ENTRYPOINT ["/entrypoint.sh"]
+# If the argument is not provided, use the default IP address
+CMD ["127.0.0.1"]

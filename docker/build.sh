@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+#DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-cd $DIR
+#cd $DIR
 
-docker build -f $DIR/Dockerfile -t orca4:latest ..
+#docker build -f $DIR/Dockerfile -t orca4:latest ..
+
+
+docker build -t cosma_auv_sim:latest .

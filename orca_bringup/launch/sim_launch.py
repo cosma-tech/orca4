@@ -281,16 +281,16 @@ def generate_launch_description():
 
 
         # Bring up Orca and Nav2 nodes
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(os.path.join(orca_bringup_dir, 'launch', 'bringup.py')),
-            launch_arguments={
-                'base': LaunchConfiguration('base'),
-                'mavros': LaunchConfiguration('mavros'),
-                'mavros_params_file': mavros_params_file,
-                'nav': LaunchConfiguration('nav'),
-                'orca_params_file': orca_params_file,
-                'slam': LaunchConfiguration('slam'),
-            }.items(),
-        ),
+        #IncludeLaunchDescription(
+        #    PythonLaunchDescriptionSource(os.path.join(orca_bringup_dir, 'launch', 'bringup.py')),
+        #    launch_arguments={
+        #        'base': LaunchConfiguration('base'),
+        #        'mavros': LaunchConfiguration('mavros'),
+        #        'mavros_params_file': mavros_params_file,
+        #        'nav': LaunchConfiguration('nav'),
+        #        'orca_params_file': orca_params_file,
+        #        'slam': LaunchConfiguration('slam'),
+        #    }.items(),
+        #),
     ])
 
