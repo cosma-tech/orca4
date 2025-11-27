@@ -107,6 +107,7 @@ RUN python3 -m pip install setuptools==58.2.0
 
 # Set up environment variables
 ENV ROS_DOMAIN_ID=0
+ENV ROS_LOG_DIR=/home/cosma_auv/swarm-vehicle/ros2_ws/logs
 ENV PYTHONUNBUFFERED=1
 
 COPY entrypoint.sh /entrypoint.sh
