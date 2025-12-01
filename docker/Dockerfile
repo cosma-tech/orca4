@@ -23,6 +23,7 @@ RUN apt-get update \
     wget \
     vim \
     ros-humble-tf-transformations \
+    ros-humble-plotjuggler-ros \
   && rm -rf /var/lib/apt/lists/*
 
 
