@@ -24,6 +24,8 @@ RUN apt-get update \
     vim \
     ros-humble-tf-transformations \
     ros-humble-plotjuggler-ros \
+    ros-humble-rosbag2-storage-mcap \
+    ros-humble-mavros-msgs \
   && rm -rf /var/lib/apt/lists/*
 
 

@@ -29,4 +29,5 @@ docker run -it \
     --ipc host \
     --pid host \
     -v ~/swarm-vehicle:/home/cosma_auv/swarm-vehicle \
+    -v ~/temp:/home/cosma_auv/temp \
     cosma_auv_sim:latest
