@@ -3,6 +3,9 @@
 # Ensure DISPLAY is set (default to :0 if not set)
 export DISPLAY=${DISPLAY:-:0}
 
+# Allow X11 connections from Docker containers
+xhost +local:docker 2>/dev/null || true
+
 XAUTH=/tmp/.docker.xauth
 
 # If it exists as a directory, remove it
@@ -19,11 +22,12 @@ if [ ! -f "$XAUTH" ]; then
     else
         touch "$XAUTH"
     fi
-    chmod 644 "$XAUTH"
+    # Make XAUTH file readable by all (needed for container user)
+    chmod 666 "$XAUTH"
 fi
 
 
-# Specific for NVIDIA drivers, required for OpenGL >= 3.3
+# Run docker with Intel GPU support
 docker run -it \
     --name cosma_auv_sim \
     -e DISPLAY=$DISPLAY \
@@ -32,6 +36,7 @@ docker run -it \
     -v "$XAUTH:$XAUTH" \
     -v "/tmp/.X11-unix:/tmp/.X11-unix:rw" \
     -v "/dev/input:/dev/input" \
+    --device=/dev/dri \
     --privileged \
     --security-opt seccomp=unconfined \
     --network host \
