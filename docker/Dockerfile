@@ -7,7 +7,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get upgrade -y
 
-# Install a few handy tools
+# Install a few handy tools and ROS2 dependencies
 RUN apt-get update \
   && apt-get -y --quiet --no-install-recommends install \
     bash-completion \
@@ -26,6 +26,11 @@ RUN apt-get update \
     ros-humble-plotjuggler-ros \
     ros-humble-rosbag2-storage-mcap \
     ros-humble-mavros-msgs \
+    ros-humble-camera-info-manager \
+    ros-humble-geographic-msgs \
+    ros-humble-image-geometry \
+    ros-humble-navigation2 \
+    ros-humble-nav2-msgs \
   && rm -rf /var/lib/apt/lists/*
 
 
