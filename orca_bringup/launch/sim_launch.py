@@ -233,6 +233,7 @@ def generate_launch_description():
             arguments=[
                 '/model/orca4_heavy/odometry@nav_msgs/msg/Odometry[gz.msgs.Odometry',
                 '/model/orca4_heavy/altimeter@sensor_msgs/msg/LaserScan[gz.msgs.LaserScan',
+                '/model/orca4_heavy/oa_sensor@sensor_msgs/msg/LaserScan[gz.msgs.LaserScan',
                 '/model/orca4_heavy/gps@sensor_msgs/msg/NavSatFix[gz.msgs.NavSat',
 
                 '/model/usv/odometry@nav_msgs/msg/Odometry[gz.msgs.Odometry',
@@ -246,7 +247,12 @@ def generate_launch_description():
         Node(
             package='auv_simulation',
             executable='altimeter_reading',
-            name='altimeter_reading',
+            output='screen',
+        ),
+
+        Node(
+            package='auv_simulation',
+            executable='oa_reading',
             output='screen',
         ),
 
@@ -273,6 +279,7 @@ def generate_launch_description():
             ),
             launch_arguments={
                 'altimeter_reading': 'false',
+                'ping1d': 'false',
                 'mavros_node': 'true',
             }.items(),
             condition=IfCondition(LaunchConfiguration('auv')),
