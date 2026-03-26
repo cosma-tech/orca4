@@ -51,7 +51,10 @@ def generate_launch_description():
     rviz_file = os.path.join(orca_bringup_dir, 'cfg', 'sim_launch.rviz')
     world_file = os.path.join(orca_description_dir, 'worlds', 'sand.world')
 
-    auv_params_file = os.path.join(auv_dir, 'params', 'auv_params.yaml')
+    auv_params_default_file = os.path.join(auv_dir, 'params', 'auv_params_default.yaml')
+    auv_params_sim_file = os.path.join(
+        get_package_share_directory('auv_simulation'), 'params', 'auv_params_sim.yaml'
+    )
 
     sim_left_ini = os.path.join(orca_bringup_dir, 'cfg', 'sim_left.ini')
     sim_right_ini = os.path.join(orca_bringup_dir, 'cfg', 'sim_right.ini')
@@ -260,7 +263,7 @@ def generate_launch_description():
             package='auv_simulation',
             executable='usbl_reading',
             output='screen',
-            parameters=[auv_params_file],
+            parameters=[auv_params_default_file, auv_params_sim_file],
             condition=IfCondition(LaunchConfiguration('usbl')),
         ),
 
@@ -268,7 +271,7 @@ def generate_launch_description():
             package='auv_simulation',
             executable='jetson',
             output='screen',
-            parameters=[auv_params_file],
+            parameters=[auv_params_default_file, auv_params_sim_file],
             condition=IfCondition(LaunchConfiguration('jetson')),
         ),
 
