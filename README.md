@@ -9,6 +9,8 @@ Orca4 uses [ArduSub](http://www.ardusub.com/) as the flight controller and
 Orca4 runs in [Gazebo Harmonic](https://gazebosim.org/home) using the standard buoyancy, hydrodynamics and thruster
 plugins. The connection between ArduSub and Gazebo is provided by [ardupilot_gazebo](https://github.com/ArduPilot/ardupilot_gazebo).
 
+This is Cosma's fork of orca4, customized for COSMA AUV simulation. See the [Simulation](#simulation) section for the Cosma-specific Docker-based workflow.
+
 ## Sensors
 
 The BlueROV2 provides the following interesting sensors:
@@ -80,74 +82,6 @@ cd ~/colcon_ws
 colcon build
 ~~~
 
-## Simulation
-
-In a terminal run:
-~~~
-source src/orca4/setup.bash
-ros2 launch orca_bringup sim_launch.py
-~~~
-
-This will bring up all of the components, including the Gazebo UI.
-The surface of the water is at Z=0 and the sub will be sitting at the surface.
-The world contains a sandy seafloor 10 meters below the surface.
-
-![GAZEBO GUI](images/gazebo.png)
-
-You should see ArduSub establish a connection to the ardupilot_gazebo plugin:
-~~~
-[ardusub-2] JSON received:
-[ardusub-2] 	timestamp
-[ardusub-2] 	imu: gyro
-[ardusub-2] 	imu: accel_body
-[ardusub-2] 	position
-[ardusub-2] 	quaternion
-[ardusub-2] 	velocity
-~~~
-
-At this point SLAM is not running because the seafloor is too far away,
-but the sub can still move using dead-reckoning.
-The [base_controller](orca_base/src/base_controller.cpp) node will send default camera poses to ArduSub
-to warm up the EKF and the [manager](orca_base/src/manager.cpp) node will request attitude information at 20Hz.
-Initialization completes when there is a good pose from the EKF:
-
-~~~
-[mavros_node-8] [INFO] [mavros.imu/handle_attitude_quaternion]: IMU: Attitude quaternion IMU detected!
-[manager-9] [INFO] [manager/operator()]: EKF is running
-[base_controller-10] [INFO] [base_controller/change_state]: EKF is running, state => RUN_NO_MAP
-[base_controller-10] [INFO] [base_controller/UnderwaterMotion]: initialize odometry to {{-2.52304e-05, -3.28182e-05, -0.228547}, {0, 0, -5.00936e-05}}
-~~~
-
-Execute a mission in a second terminal:
-~~~
-source src/orca4/setup.bash
-ros2 run orca_bringup mission_runner.py
-~~~ 
-
-![RVIZ2_GUI](images/rviz2.png)
-
-The default mission will dive to -7m and move in a large rectangle.
-At -6m the cameras will pick up a view of the seafloor at and ORB_SLAM2 will start:
-~~~
-[orb_slam2_ros_stereo-13] New map created with 571 points
-[base_controller-10] [INFO] [base_controller/change_state]: map created, state => RUN_LOCALIZED
-~~~
-
-
-You should notice a loop closure sometime during the 2nd run around the rectangle. The adjustment is very small.
-
-~~~
-[orb_slam2_ros_stereo-13] Loop detected!
-[orb_slam2_ros_stereo-13] Local Mapping STOP
-[orb_slam2_ros_stereo-13] Local Mapping RELEASE
-[orb_slam2_ros_stereo-13] Starting Global Bundle Adjustment
-[orb_slam2_ros_stereo-13] Global Bundle Adjustment finished
-[orb_slam2_ros_stereo-13] Updating map ...
-[orb_slam2_ros_stereo-13] Local Mapping STOP
-[orb_slam2_ros_stereo-13] Local Mapping RELEASE
-[orb_slam2_ros_stereo-13] Map updated!
-~~~
-
 ## Packages
 
 * [`orca_base` Base controller, localization, frames](orca_base)
@@ -156,3 +90,51 @@ You should notice a loop closure sometime during the 2nd run around the rectangl
 * [`orca_msgs` Custom messages](orca_msgs)
 * [`orca_nav2` Nav2 plugins](orca_nav2)
 * [`orca_shared` Dynamics model, shared utilities](orca_shared)
+
+## Simulation
+
+### Step 1 — Build the Docker image (once)
+
+From the `docker/` directory:
+~~~
+cd docker
+./build.sh
+~~~
+
+### Step 2 — Start the simulation container
+
+~~~
+./run.sh
+~~~
+
+The container is named `cosma_auv_sim`. If Gazebo has graphics issues, remove and restart it:
+~~~
+docker rm cosma_auv_sim
+./run.sh
+~~~
+
+### Step 3 — Set up the environment and launch
+
+Inside the container, run the environment setup:
+~~~
+source /opt/ros/humble/setup.bash
+source /home/cosma_auv/swarm-vehicle/ros2_ws/install/setup.bash
+source /home/cosma_auv/swarm-vehicle/ros2_ws/src/orca4/setup.bash
+export FASTRTPS_DEFAULT_PROFILES_FILE=/etc/dds/super_client_configuration_file.xml
+export ROS_DISCOVERY_SERVER="127.0.0.1:11811"
+ros2 daemon stop
+ros2 daemon start
+~~~
+
+Then pick a launch variant:
+
+| Variant | Command |
+|---|---|
+| Without SLAM | `ros2 launch orca_bringup sim_launch.py base:=false mavros:=false nav:=false rviz:=false slam:=false auv:=false` |
+| Without SLAM, headless | `ros2 launch orca_bringup sim_launch.py base:=false mavros:=false nav:=false rviz:=false slam:=false auv:=false gzclient:=false` |
+| With SLAM | `ros2 launch orca_bringup sim_launch.py base:=false mavros:=false nav:=false rviz:=false slam:=true auv:=false` |
+| With SLAM, headless | `ros2 launch orca_bringup sim_launch.py base:=false mavros:=false nav:=false rviz:=false slam:=true auv:=false gzclient:=false` |
+
+### Step 4 — Start the COSMA AUV stack
+
+Once the simulation container is running, start the COSMA AUV container in DEV mode — see the [auv submodule README](../auv/README.md) for the full workflow.
