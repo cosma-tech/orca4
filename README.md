@@ -128,12 +128,25 @@ ros2 daemon start
 
 Then pick a launch variant:
 
-| Variant | Command |
-|---|---|
-| Without SLAM | `ros2 launch orca_bringup sim_launch.py base:=false mavros:=false nav:=false rviz:=false slam:=false auv:=false` |
-| Without SLAM, headless | `ros2 launch orca_bringup sim_launch.py base:=false mavros:=false nav:=false rviz:=false slam:=false auv:=false gzclient:=false` |
-| With SLAM | `ros2 launch orca_bringup sim_launch.py base:=false mavros:=false nav:=false rviz:=false slam:=true auv:=false` |
-| With SLAM, headless | `ros2 launch orca_bringup sim_launch.py base:=false mavros:=false nav:=false rviz:=false slam:=true auv:=false gzclient:=false` |
+**Without SLAM:**
+```bash
+ros2 launch orca_bringup sim_launch.py base:=false mavros:=false nav:=false rviz:=false slam:=false auv:=false
+```
+
+**Without SLAM, headless:**
+```bash
+ros2 launch orca_bringup sim_launch.py base:=false mavros:=false nav:=false rviz:=false slam:=false auv:=false gzclient:=false
+```
+
+**With SLAM:**
+```bash
+ros2 launch orca_bringup sim_launch.py base:=false mavros:=false nav:=false rviz:=false slam:=true auv:=false
+```
+
+**With SLAM, headless:**
+```bash
+ros2 launch orca_bringup sim_launch.py base:=false mavros:=false nav:=false rviz:=false slam:=true auv:=false gzclient:=false
+```
 
 ### Step 4 — Start the COSMA AUV stack
 
