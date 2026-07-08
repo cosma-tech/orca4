@@ -112,6 +112,7 @@ RUN pip3 install --break-system-packages pymavlink
 ENV ROS_DOMAIN_ID=0
 ENV ROS_LOG_DIR=/home/cosma_auv/swarm-vehicle/ros2_ws/logs
 ENV PYTHONUNBUFFERED=1
+ENV RCUTILS_CONSOLE_OUTPUT_FORMAT="[{severity}] [{date_time_with_ms}] [{name}]: {message}"
 
 COPY entrypoint.sh /entrypoint.sh
 RUN sudo chmod +x /entrypoint.sh
