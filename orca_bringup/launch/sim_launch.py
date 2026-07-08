@@ -23,18 +23,18 @@
 # SOFTWARE.
 
 """
-Launch a simulation.
+Launch the simulation.
 
-Includes Gazebo, ArduSub, RViz, mavros, all ROS nodes.
+Brings up Gazebo, ArduSub SITL, the gz<->ROS bridge, and the auv_simulation sensor nodes.
+The AUV stack itself runs in the separate cosma_auv container, never here.
 """
 
 import os
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, ExecuteProcess, IncludeLaunchDescription
+from launch.actions import DeclareLaunchArgument, ExecuteProcess
 from launch.conditions import IfCondition, UnlessCondition
-from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node, SetParameter
 
@@ -42,22 +42,13 @@ from launch_ros.actions import Node, SetParameter
 def generate_launch_description():
     orca_bringup_dir = get_package_share_directory('orca_bringup')
     orca_description_dir = get_package_share_directory('orca_description')
-    auv_dir = get_package_share_directory('auv')
+    auv_sim_dir = get_package_share_directory('auv_simulation')
 
     ardusub_params_file = os.path.join(orca_bringup_dir, 'cfg', 'sub.parm')
-    mavros_params_file = os.path.join(orca_bringup_dir, 'params', 'sim_mavros_params.yaml')
-    orca_params_file = os.path.join(orca_bringup_dir, 'params', 'sim_orca_params.yaml')
     rosbag2_record_qos_file = os.path.join(orca_bringup_dir, 'params', 'rosbag2_record_qos.yaml')
-    rviz_file = os.path.join(orca_bringup_dir, 'cfg', 'sim_launch.rviz')
     world_file = os.path.join(orca_description_dir, 'worlds', 'sand.world')
+    auv_params_sim_file = os.path.join(auv_sim_dir, 'params', 'auv_params_sim.yaml')
 
-    auv_params_default_file = os.path.join(auv_dir, 'params', 'auv_params_default.yaml')
-    auv_params_sim_file = os.path.join(
-        get_package_share_directory('auv_simulation'), 'params', 'auv_params_sim.yaml'
-    )
-
-    sim_left_ini = os.path.join(orca_bringup_dir, 'cfg', 'sim_left.ini')
-    sim_right_ini = os.path.join(orca_bringup_dir, 'cfg', 'sim_right.ini')
     return LaunchDescription([
 
         SetParameter(name='use_sim_time', value=False),
@@ -65,7 +56,7 @@ def generate_launch_description():
         DeclareLaunchArgument(
             'ardusub',
             default_value='True',
-            description='Launch ArduSUB with SIM_JSON?'
+            description='Launch ArduSub with SIM_JSON?'
         ),
 
         DeclareLaunchArgument(
@@ -75,45 +66,9 @@ def generate_launch_description():
         ),
 
         DeclareLaunchArgument(
-            'base',
-            default_value='True',
-            description='Launch base controller?',
-        ),
-
-        DeclareLaunchArgument(
             'gzclient',
             default_value='True',
             description='Launch Gazebo UI?'
-        ),
-
-        DeclareLaunchArgument(
-            'mavros',
-            default_value='True',
-            description='Launch mavros?',
-        ),
-
-        DeclareLaunchArgument(
-            'nav',
-            default_value='True',
-            description='Launch navigation?',
-        ),
-
-        DeclareLaunchArgument(
-            'rviz',
-            default_value='True',
-            description='Launch rviz?',
-        ),
-
-        DeclareLaunchArgument(
-            'slam',
-            default_value='True',
-            description='Launch SLAM?',
-        ),
-
-        DeclareLaunchArgument(
-            'auv',
-            default_value='True',
-            description='Launch AUV nodes?',
         ),
 
         DeclareLaunchArgument(
@@ -128,37 +83,25 @@ def generate_launch_description():
             description='Launch Jetson simulation node?',
         ),
 
-        # Bag useful topics
+        # Bag useful sim topics
         ExecuteProcess(
             cmd=[
                 'ros2', 'bag', 'record',
                 '--qos-profile-overrides-path', rosbag2_record_qos_file,
                 '--include-hidden-topics',
-                '/cmd_vel',
-                '/mavros/local_position/pose',
-                '/mavros/rc/override',
-                '/mavros/setpoint_position/global',
-                '/mavros/state',
-                '/mavros/vision_pose/pose',
                 '/model/orca4_heavy/odometry',
-                '/motion',
-                '/odom',
-                '/orb_slam2_stereo_node/pose',
-                '/orb_slam2_stereo_node/status',
-                '/pid_z',
-                '/rosout',
+                '/model/usv/odometry',
+                '/altimeter_raw',
+                '/sonar/ping1d/data',
+                '/usbl_reading/usbl_solution',
+                '/jetson/heartbeat',
+                '/clock',
                 '/tf',
                 '/tf_static',
+                '/rosout',
             ],
             output='screen',
             condition=IfCondition(LaunchConfiguration('bag')),
-        ),
-
-        # Launch rviz
-        ExecuteProcess(
-            cmd=['rviz2', '-d', rviz_file],
-            output='screen',
-            condition=IfCondition(LaunchConfiguration('rviz')),
         ),
 
         # Launch ArduSub w/ SIM_JSON
@@ -172,7 +115,7 @@ def generate_launch_description():
             condition=IfCondition(LaunchConfiguration('ardusub')),
         ),
 
-        # Launch Gazebo Sim
+        # Launch Gazebo Sim (UI)
         # gz must be on the $PATH
         # libArduPilotPlugin.so must be on the GZ_SIM_SYSTEM_PLUGIN_PATH
         ExecuteProcess(
@@ -181,55 +124,14 @@ def generate_launch_description():
             condition=IfCondition(LaunchConfiguration('gzclient')),
         ),
 
-        # Launch Gazebo Sim server-only
+        # Launch Gazebo Sim server-only (headless)
         ExecuteProcess(
             cmd=['gz', 'sim', '-v', '3', '-r', '-s', world_file],
             output='screen',
             condition=UnlessCondition(LaunchConfiguration('gzclient')),
         ),
 
-        # Get images from Gazebo Sim to ROS
-        Node(
-            package='ros_gz_image',
-            executable='image_bridge',
-            arguments=['stereo_left', 'stereo_right'],
-            output='screen',
-        ),
-
-        # Gazebo Sim doesn't publish camera info, so do that here
-        Node(
-            package='orca_base',
-            executable='camera_info_publisher',
-            name='left_info_publisher',
-            output='screen',
-            parameters=[{
-                'camera_info_url': 'file://' + sim_left_ini,
-                'camera_name': 'stereo_left',
-                'frame_id': 'stereo_left_frame',
-                'timer_period_ms': 50,
-            }],
-            remappings=[
-                ('/camera_info', '/stereo_left/camera_info'),
-            ],
-        ),
-
-        Node(
-            package='orca_base',
-            executable='camera_info_publisher',
-            name='right_info_publisher',
-            output='screen',
-            parameters=[{
-                'camera_info_url': 'file://' + sim_right_ini,
-                'camera_name': 'stereo_right',
-                'frame_id': 'stereo_right_frame',
-                'timer_period_ms': 50,
-            }],
-            remappings=[
-                ('/camera_info', '/stereo_right/camera_info'),
-            ],
-        ),
-
-        # Publish ground truth pose from Ignition Gazebo
+        # Bridge Gazebo ground-truth / sensor topics to ROS
         Node(
             package='ros_gz_bridge',
             executable='parameter_bridge',
@@ -263,7 +165,7 @@ def generate_launch_description():
             package='auv_simulation',
             executable='usbl_reading',
             output='screen',
-            parameters=[auv_params_default_file, auv_params_sim_file],
+            parameters=[auv_params_sim_file],
             condition=IfCondition(LaunchConfiguration('usbl')),
         ),
 
@@ -271,36 +173,7 @@ def generate_launch_description():
             package='auv_simulation',
             executable='jetson',
             output='screen',
-            parameters=[auv_params_default_file, auv_params_sim_file],
+            parameters=[auv_params_sim_file],
             condition=IfCondition(LaunchConfiguration('jetson')),
         ),
-
-        # Include AUV launch file
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(
-                os.path.join(get_package_share_directory('auv'), 'launch', 'launch_auv.py')
-            ),
-            launch_arguments={
-                'altimeter_reading': 'false',
-                'ping1d': 'false',
-                'mavros_node': 'true',
-            }.items(),
-            condition=IfCondition(LaunchConfiguration('auv')),
-        ),
-                
-
-
-        # Bring up Orca and Nav2 nodes
-        #IncludeLaunchDescription(
-        #    PythonLaunchDescriptionSource(os.path.join(orca_bringup_dir, 'launch', 'bringup.py')),
-        #    launch_arguments={
-        #        'base': LaunchConfiguration('base'),
-        #        'mavros': LaunchConfiguration('mavros'),
-        #        'mavros_params_file': mavros_params_file,
-        #        'nav': LaunchConfiguration('nav'),
-        #        'orca_params_file': orca_params_file,
-        #        'slam': LaunchConfiguration('slam'),
-        #    }.items(),
-        #),
     ])
-

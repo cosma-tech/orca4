@@ -3,7 +3,7 @@
 if [ -f "/home/cosma_auv/swarm-vehicle/ros2_ws/install/setup.bash" ]; then
 	source /home/cosma_auv/swarm-vehicle/ros2_ws/src/orca4/setup.bash
 else
-	source /opt/ros/humble/setup.bash
+	source /opt/ros/jazzy/setup.bash
 fi
 
 git config --global --add safe.directory /root/swarm-vehicle

@@ -1,4 +1,4 @@
-FROM osrf/ros:humble-desktop AS base
+FROM osrf/ros:jazzy-desktop AS base
 
 ARG USERNAME=cosma_auv
 ARG USER_UID=1000
@@ -17,30 +17,27 @@ RUN apt-get update \
     gnupg \
     iputils-ping \
     lsb-release \
-    mlocate \
+    plocate \
     software-properties-common \
     sudo \
     wget \
     vim \
-    ros-humble-tf-transformations \
-    ros-humble-plotjuggler-ros \
-    ros-humble-rosbag2-storage-mcap \
-    ros-humble-mavros-msgs \
-    ros-humble-camera-info-manager \
-    ros-humble-geographic-msgs \
-    ros-humble-image-geometry \
-    ros-humble-navigation2 \
-    ros-humble-nav2-msgs \
+    python3-pip \
+    ros-jazzy-tf-transformations \
+    ros-jazzy-plotjuggler-ros \
+    ros-jazzy-rosbag2-storage-mcap \
+    ros-jazzy-mavros-msgs \
+    ros-jazzy-geographic-msgs \
   && rm -rf /var/lib/apt/lists/*
 
 
-# Install Gazebo Harmonic for use with ROS2 Humble
+# Install Gazebo Harmonic for use with ROS2 Jazzy
 RUN wget https://packages.osrfoundation.org/gazebo.gpg -O /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg
 RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/gazebo-stable.list > /dev/null
 RUN apt-get update \
   && apt-get -y --quiet --no-install-recommends install \
     gz-harmonic \
-    ros-humble-ros-gzharmonic \
+    ros-jazzy-ros-gz \
   && rm -rf /var/lib/apt/lists/*
 
 # Install some ardupilot and ardupilot_gazebo prereqs (libgz-sim8-dev is for gz harmonic)
@@ -60,7 +57,10 @@ RUN apt-get update \
 
 # Create a non-root user
 # Required for ArduSub install, but generally a good idea
-RUN groupadd --gid $USER_GID $USERNAME \
+# The Jazzy (Noble) base ships a default ubuntu:1000 user that collides with UID 1000 —
+# remove it before creating cosma_auv.
+RUN userdel -r ubuntu 2>/dev/null; groupdel ubuntu 2>/dev/null; \
+  groupadd --gid $USER_GID $USERNAME \
   && useradd -s /bin/bash --uid $USER_UID --gid $USER_GID -m $USERNAME \
   && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
   && chmod 0440 /etc/sudoers.d/$USERNAME \
@@ -104,14 +104,9 @@ RUN [ "/bin/bash" , "-c" , " \
   && cmake .. -DCMAKE_BUILD_TYPE=RelWithDebInfo \
   && make -j4" ]
 
-# MAVROS depends on GeographicLib, and GeographicLib needs some datasets
-RUN [ "/bin/bash" , "-c" , "\
-  wget https://raw.githubusercontent.com/mavlink/mavros/master/mavros/scripts/install_geographiclib_datasets.sh \
-  && chmod +x install_geographiclib_datasets.sh \
-  && sudo ./install_geographiclib_datasets.sh" ]
-
-# Fix for the bug with setuptools: https://github.com/ros2/ros2/issues/1702
-RUN python3 -m pip install setuptools==58.2.0
+# Python deps used by the auv_simulation nodes (gps node needs pymavlink).
+# tf-transformations comes from the ros-jazzy-tf-transformations apt package above.
+RUN pip3 install --break-system-packages pymavlink
 
 # Set up environment variables
 ENV ROS_DOMAIN_ID=0
