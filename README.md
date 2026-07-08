@@ -117,7 +117,7 @@ docker rm cosma_auv_sim
 
 Inside the container, run the environment setup:
 ~~~
-source /opt/ros/humble/setup.bash
+source /opt/ros/jazzy/setup.bash
 source /home/cosma_auv/swarm-vehicle/ros2_ws/install/setup.bash
 source /home/cosma_auv/swarm-vehicle/ros2_ws/src/orca4/setup.bash
 export FASTRTPS_DEFAULT_PROFILES_FILE=/etc/dds/super_client_configuration_file.xml
