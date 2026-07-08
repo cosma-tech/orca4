@@ -6,5 +6,9 @@
 
 #docker build -f $DIR/Dockerfile -t orca4:latest ..
 
+docker stop cosma_auv_sim
+docker container remove cosma_auv_sim
+docker image remove cosma_auv_sim
+
 
 docker build -t cosma_auv_sim:latest .
