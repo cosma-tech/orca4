@@ -14,7 +14,6 @@ endif()
 install(
   PROGRAMS
   scripts/dump_rosout.py
-  scripts/mission_runner.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
