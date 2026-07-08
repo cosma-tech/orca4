@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Remove any existing production container so we can reuse the name
+docker rm -f cosma_auv_sim 2>/dev/null
+
 # Ensure DISPLAY is set (default to :0 if not set)
 export DISPLAY=${DISPLAY:-:0}
 
