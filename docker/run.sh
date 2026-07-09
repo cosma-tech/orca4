@@ -36,6 +36,7 @@ fi
 # Run docker with Intel GPU support
 docker run -dit \
     --name cosma_auv_sim \
+    -e ROS_DISCOVERY_SERVER="127.0.0.1:11811" \
     -e DISPLAY=$DISPLAY \
     -e QT_X11_NO_MITSHM=1 \
     -e XAUTHORITY=$XAUTH \
