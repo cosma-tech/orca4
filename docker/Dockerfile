@@ -64,8 +64,7 @@ RUN userdel -r ubuntu 2>/dev/null; groupdel ubuntu 2>/dev/null; \
   && useradd -s /bin/bash --uid $USER_UID --gid $USER_GID -m $USERNAME \
   && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
   && chmod 0440 /etc/sudoers.d/$USERNAME \
-  && echo "\n# Added by orca4 Dockerfile:" >> /home/$USERNAME/.bashrc \
-  && echo "source /usr/share/bash-completion/completions/git" >> /home/$USERNAME/.bashrc
+  && printf '\n# Added by orca4 Dockerfile: interactive (docker exec) shell setup\nsource /usr/share/bash-completion/completions/git\nsource /opt/ros/jazzy/setup.bash\n[ -f /home/cosma_auv/swarm-vehicle/ros2_ws/install/setup.bash ] && source /home/cosma_auv/swarm-vehicle/ros2_ws/src/orca4/setup.bash\n' >> /home/$USERNAME/.bashrc
 
 # Switch to our new user
 USER $USERNAME
@@ -113,6 +112,7 @@ ENV ROS_DOMAIN_ID=0
 ENV ROS_LOG_DIR=/home/cosma_auv/swarm-vehicle/ros2_ws/logs
 ENV PYTHONUNBUFFERED=1
 ENV RCUTILS_CONSOLE_OUTPUT_FORMAT="[{severity}] [{date_time_with_ms}] [{name}]: {message}"
+ENV FASTRTPS_DEFAULT_PROFILES_FILE=/etc/dds/super_client_configuration_file.xml
 
 COPY entrypoint.sh /entrypoint.sh
 RUN sudo chmod +x /entrypoint.sh
