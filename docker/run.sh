@@ -70,9 +70,12 @@ if [ $BUILD_EXIT -ne 0 ]; then
     exit $BUILD_EXIT
 fi
 
+# Restart so the entrypoint re-runs with install/ present and sources orca4/setup.bash
+# (overlay + ardusub PATH + GZ paths) before the shell.
+docker restart cosma_auv_sim
+
 echo "Build complete. Attaching to the container terminal."
 echo "In this shell, start the simulation with: ros2 launch orca_bringup sim_launch.py"
 echo "(Next time, just run: docker start -ai cosma_auv_sim)"
 
-# Hand the container's interactive terminal to the user
 docker attach cosma_auv_sim
