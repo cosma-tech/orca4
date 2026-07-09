@@ -23,6 +23,7 @@ RUN apt-get update \
     wget \
     vim \
     python3-pip \
+    python3-venv \
     ros-jazzy-tf-transformations \
     ros-jazzy-plotjuggler-ros \
     ros-jazzy-rosbag2-storage-mcap \
@@ -54,6 +55,17 @@ RUN apt-get update \
     gstreamer1.0-libav \
     gstreamer1.0-gl \
   && rm -rf /var/lib/apt/lists/*
+
+# Python deps used by the auv_simulation nodes, installed into a --system-site-packages venv
+# (mirrors the AUV image). --system-site-packages so the venv also sees rclpy, numpy and the rest
+# of the ROS2/system Python stack (not pip-installable). Created here as root so /opt/venv is
+# writable; the ENV PATH that makes this the default interpreter is set later (after the ArduSub
+# and ardupilot_gazebo source builds, so those keep using the system python unchanged).
+# pymavlink is only imported by auv_simulation/gps.py; that GPS node is not launched by
+# sim_launch.py, but it is kept installed intentionally.
+RUN python3 -m venv /opt/venv --system-site-packages \
+  && /opt/venv/bin/pip install --upgrade pip \
+  && /opt/venv/bin/pip install pymavlink
 
 # Create a non-root user
 # Required for ArduSub install, but generally a good idea
@@ -103,9 +115,26 @@ RUN [ "/bin/bash" , "-c" , " \
   && cmake .. -DCMAKE_BUILD_TYPE=RelWithDebInfo \
   && make -j4" ]
 
-# Python deps used by the auv_simulation nodes (gps node needs pymavlink).
-# tf-transformations comes from the ros-jazzy-tf-transformations apt package above.
-RUN pip3 install --break-system-packages pymavlink
+# Make the venv python the default interpreter for every process (runtime entrypoint launch and
+# the run.sh docker-exec build) with no activation step. pymavlink was installed into the venv
+# above; tf-transformations comes from the ros-jazzy-tf-transformations apt package.
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Expose the venv site-packages to every interpreter (incl. system python running `ros2 launch`)
+# so launch files that import venv-only libs (e.g. auv modules pulling in pymavlink) resolve them.
+# Appended last on PYTHONPATH by ROS/workspace setup, so it acts as a fallback and does not shadow
+# system/ROS packages. (python3.12 is the Noble/Jazzy version.)
+ENV PYTHONPATH="/opt/venv/lib/python3.12/site-packages"
+
+# The workspace is built with `python3 -m colcon` (see run.sh BUILD_CMD), NOT the bare `colcon`
+# executable. Because PATH above makes `python3` the venv python, `python3 -m colcon` runs the
+# (system) colcon MODULE under the venv python, which bakes venv-python shebangs
+# (#!/opt/venv/bin/python3) into the ament_python nodes so they run under the venv at launch.
+# colcon itself stays the system one (visible via --system-site-packages) and is intentionally
+# NOT installed into the venv.
+# NOTE for dev builds: always use `python3 -m colcon build ...`. A bare `colcon build` would run
+# the system colcon under system python and bake system-python shebangs (nodes would not see the
+# venv libs).
 
 # Set up environment variables
 ENV ROS_DOMAIN_ID=0

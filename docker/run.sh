@@ -64,7 +64,7 @@ docker run -dit \
 BUILD_CMD="source /opt/ros/jazzy/setup.bash && \
     cd /home/cosma_auv/swarm-vehicle/ros2_ws && \
     vcs import src < src/orca4/workspace.repos && \
-    colcon build --packages-up-to auv_simulation orca_bringup orca_description --symlink-install"
+    python3 -m colcon build --packages-up-to auv_simulation orca_bringup orca_description --symlink-install"
 
 echo "Building the simulation workspace (one-time)..."
 docker exec cosma_auv_sim bash -c "$BUILD_CMD"
