@@ -63,10 +63,13 @@ cd docker
 From the `docker/` directory, run `run.sh` **one time**. It starts the container
 (`cosma_auv_sim`), does a one-time `vcs import` + `python3 -m colcon build` of the ROS 2 packages
 (into `build/` and `install/`), restarts the container so the entrypoint sources the built
-overlay, then attaches you to a shell:
+overlay, then attaches you to a shell **inside the container**:
 ~~~
 ./run.sh
 ~~~
+
+When the build finishes you are left at a prompt **inside the container** — this is the terminal
+where you launch the simulation (Step 3).
 
 If Gazebo has graphics issues, remove the container and re-bootstrap:
 ~~~
@@ -76,14 +79,17 @@ docker rm -f cosma_auv_sim
 
 ### Step 3 — Start the simulation (inside the container)
 
-The packages are already built, so everyday use is just to start and attach to the container:
+You reach the container terminal in two ways:
+* **Right after `run.sh` (Step 2)** — the bootstrap leaves you attached at the container prompt.
+* **Everyday use** — the packages are already built, so just start and attach to the container:
 ~~~
 docker start -ai cosma_auv_sim
 ~~~
 
-`docker start` re-runs the entrypoint, which sources the ROS 2 overlay, puts `ardusub` on the
-`PATH`, and sets the Gazebo resource paths and DDS discovery config — no manual environment setup
-is needed. At the container shell, start the simulation with one of:
+Either way you end up at a shell **inside the container**. `docker start` (and the restart done by
+`run.sh`) re-runs the entrypoint, which sources the ROS 2 overlay, puts `ardusub` on the `PATH`, and
+sets the Gazebo resource paths and DDS discovery config — no manual environment setup is needed.
+At the container shell, start the simulation with one of:
 
 **Gazebo GUI (default):**
 ```bash
@@ -100,8 +106,7 @@ ros2 launch orca_bringup sim_launch.py gzclient:=false
 container, never here.
 
 Other launch arguments (all default to `True`) can be added to either command: `ardusub`, `usbl`
-and `jetson` (set to `false` to disable the corresponding process), and `bag:=true` to record the
-interesting sim topics to a rosbag.
+and `jetson` — set any to `false` to disable the corresponding process.
 
 ### Step 4 — Start the COSMA AUV stack
 
