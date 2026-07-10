@@ -48,7 +48,6 @@ def generate_launch_description():
     auv_sim_dir = get_package_share_directory('auv_simulation')
 
     ardusub_params_file = os.path.join(orca_bringup_dir, 'cfg', 'sub.parm')
-    rosbag2_record_qos_file = os.path.join(orca_bringup_dir, 'params', 'rosbag2_record_qos.yaml')
     world_file = os.path.join(orca_description_dir, 'worlds', 'sand.world')
     auv_params_sim_file = os.path.join(auv_sim_dir, 'params', 'auv_params_sim.yaml')
 
