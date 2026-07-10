@@ -52,7 +52,7 @@ Gazebo models for the world are fetched via [`workspace.repos`](https://github.c
 
 ### Step 1 — Build the Docker image (once)
 
-From the `docker/` directory:
+It can take up to 15 minutes. From the `docker/` directory:
 ~~~
 cd docker
 ./build.sh
@@ -70,12 +70,6 @@ overlay, then attaches you to a shell **inside the container**:
 
 When the build finishes you are left at a prompt **inside the container** — this is the terminal
 where you launch the simulation (Step 3).
-
-If Gazebo has graphics issues, remove the container and re-bootstrap:
-~~~
-docker rm -f cosma_auv_sim
-./run.sh
-~~~
 
 ### Step 3 — Start the simulation (inside the container)
 
@@ -107,6 +101,9 @@ container, never here.
 
 Other launch arguments (all default to `True`) can be added to either command: `ardusub`, `usbl`
 and `jetson` — set any to `false` to disable the corresponding process.
+
+If Gazebo has graphics issues restart run.sh (**Step 2**)
+
 
 ### Step 4 — Start the COSMA AUV stack
 
