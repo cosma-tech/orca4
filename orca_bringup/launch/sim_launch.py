@@ -45,7 +45,6 @@ def generate_launch_description():
     auv_sim_dir = get_package_share_directory('auv_simulation')
 
     ardusub_params_file = os.path.join(orca_bringup_dir, 'cfg', 'sub.parm')
-    rosbag2_record_qos_file = os.path.join(orca_bringup_dir, 'params', 'rosbag2_record_qos.yaml')
     world_file = os.path.join(orca_description_dir, 'worlds', 'sand.world')
     auv_params_sim_file = os.path.join(auv_sim_dir, 'params', 'auv_params_sim.yaml')
 
@@ -57,12 +56,6 @@ def generate_launch_description():
             'ardusub',
             default_value='True',
             description='Launch ArduSub with SIM_JSON?'
-        ),
-
-        DeclareLaunchArgument(
-            'bag',
-            default_value='False',
-            description='Bag interesting topics?',
         ),
 
         DeclareLaunchArgument(
@@ -81,27 +74,6 @@ def generate_launch_description():
             'jetson',
             default_value='True',
             description='Launch Jetson simulation node?',
-        ),
-
-        # Bag useful sim topics
-        ExecuteProcess(
-            cmd=[
-                'ros2', 'bag', 'record',
-                '--qos-profile-overrides-path', rosbag2_record_qos_file,
-                '--include-hidden-topics',
-                '/model/orca4_heavy/odometry',
-                '/model/usv/odometry',
-                '/altimeter_raw',
-                '/sonar/ping1d/data',
-                '/usbl_reading/usbl_solution',
-                '/jetson/heartbeat',
-                '/clock',
-                '/tf',
-                '/tf_static',
-                '/rosout',
-            ],
-            output='screen',
-            condition=IfCondition(LaunchConfiguration('bag')),
         ),
 
         # Launch ArduSub w/ SIM_JSON
