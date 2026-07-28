@@ -128,6 +128,12 @@ def generate_launch_description():
             description='Launch Jetson simulation node?',
         ),
 
+        DeclareLaunchArgument(
+            'current',
+            default_value='True',
+            description='Launch ocean current simulation node?',
+        ),
+
         # Bag useful topics
         ExecuteProcess(
             cmd=[
@@ -241,6 +247,8 @@ def generate_launch_description():
 
                 '/model/usv/odometry@nav_msgs/msg/Odometry[gz.msgs.Odometry',
                 '/usv/pose@geometry_msgs/msg/Pose@gz.msgs.Pose',
+                
+                '/model/orca4_heavy/ocean_current@geometry_msgs/msg/Vector3]gz.msgs.Vector3d',
 
                 '/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock',
             ],
@@ -273,6 +281,13 @@ def generate_launch_description():
             output='screen',
             parameters=[auv_params_default_file, auv_params_sim_file],
             condition=IfCondition(LaunchConfiguration('jetson')),
+        ),
+
+        Node(
+            package='auv_simulation',
+            executable='ocean_current',
+            output='screen',
+            condition=IfCondition(LaunchConfiguration('current')),
         ),
 
         # Include AUV launch file
