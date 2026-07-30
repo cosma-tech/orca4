@@ -1,0 +1,10 @@
+record_topics:
+  - /clock
+  - /model/orca4_heavy/odometry
+  - /model/usv/odometry
+  - /model/orca4_heavy/ocean_current
+  - /ocean_current_cmd
+  - /usv/pose
+  - /model/orca4_heavy/gps
+  - /model/orca4_heavy/altimeter
+  - /model/orca4_heavy/oa_sensor

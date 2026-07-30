@@ -29,6 +29,9 @@ Includes Gazebo, ArduSub, RViz, mavros, all ROS nodes.
 """
 
 import os
+from datetime import datetime
+
+import yaml
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
@@ -58,6 +61,17 @@ def generate_launch_description():
 
     sim_left_ini = os.path.join(orca_bringup_dir, 'cfg', 'sim_left.ini')
     sim_right_ini = os.path.join(orca_bringup_dir, 'cfg', 'sim_right.ini')
+
+    mcap_config_file = os.path.join(orca_bringup_dir, 'params', 'mcap_config.yaml')
+    sim_rosbag_topics_file = os.path.join(orca_bringup_dir, 'params', 'sim_rosbag_topics.yaml')
+    with open(sim_rosbag_topics_file, 'r') as f:
+        topics = (yaml.safe_load(f) or {}).get('record_topics', [])
+
+    run_name = datetime.now().strftime('%Y%m%d_%H%M%S') + '_SIM'
+    run_dir = os.path.join(os.path.expanduser('~'), 'log', run_name)
+    os.makedirs(run_dir, exist_ok=True)
+    bag_out = os.path.join(run_dir, run_name)
+
     return LaunchDescription([
 
         SetParameter(name='use_sim_time', value=False),
@@ -70,7 +84,7 @@ def generate_launch_description():
 
         DeclareLaunchArgument(
             'bag',
-            default_value='False',
+            default_value='True',
             description='Bag interesting topics?',
         ),
 
@@ -134,27 +148,17 @@ def generate_launch_description():
             description='Launch ocean current simulation node?',
         ),
 
-        # Bag useful topics
         ExecuteProcess(
             cmd=[
                 'ros2', 'bag', 'record',
+                '-o', bag_out,
+                '-s', 'mcap',
                 '--qos-profile-overrides-path', rosbag2_record_qos_file,
                 '--include-hidden-topics',
-                '/cmd_vel',
-                '/mavros/local_position/pose',
-                '/mavros/rc/override',
-                '/mavros/setpoint_position/global',
-                '/mavros/state',
-                '/mavros/vision_pose/pose',
-                '/model/orca4_heavy/odometry',
-                '/motion',
-                '/odom',
-                '/orb_slam2_stereo_node/pose',
-                '/orb_slam2_stereo_node/status',
-                '/pid_z',
-                '/rosout',
-                '/tf',
-                '/tf_static',
+                '--storage-config-file', mcap_config_file,
+                '--max-bag-duration', '30',
+                '--max-bag-size', '1073741824',
+                *topics,
             ],
             output='screen',
             condition=IfCondition(LaunchConfiguration('bag')),

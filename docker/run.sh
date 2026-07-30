@@ -27,6 +27,10 @@ if [ ! -f "$XAUTH" ]; then
 fi
 
 
+mkdir -p ~/log
+
+docker rm -f cosma_auv_sim 2>/dev/null
+
 # Run docker with Intel GPU support
 docker run -it \
     --name cosma_auv_sim \
@@ -44,4 +48,5 @@ docker run -it \
     --pid host \
     -v ~/swarm-vehicle:/home/cosma_auv/swarm-vehicle \
     -v ~/logs:/home/cosma_auv/logs \
+    -v ~/log:/home/cosma_auv/log \
     cosma_auv_sim:latest
