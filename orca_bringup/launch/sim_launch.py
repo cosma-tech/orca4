@@ -171,12 +171,18 @@ def generate_launch_description():
             package='auv_simulation',
             executable='altimeter_reading',
             output='screen',
+            remappings=[
+                ('~/range', '/altimeter_reading/range')
+            ]
         ),
 
         Node(
             package='auv_simulation',
             executable='oa_reading',
             output='screen',
+            remappings=[
+                ('~/range', '/oa_kogger_reading/range')
+            ]
         ),
 
         Node(

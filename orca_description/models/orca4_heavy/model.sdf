@@ -56,28 +56,43 @@
                   <horizontal>
                       <samples>1</samples>
                       <resolution>1</resolution>
-                      <min_angle>-0.01</min_angle>
-                      <max_angle>0.01</max_angle>
+                      <min_angle>-0.01</min_angle> <!-- For 12.5° Field of view -->
+                      <max_angle>0.01</max_angle> <!-- For 12.5° Field of view -->
                   </horizontal>
                   <vertical>
                       <samples>1</samples>
                       <resolution>0.01</resolution>
-                      <min_angle>0</min_angle>
-                      <max_angle>0</max_angle>
+                      <min_angle>0</min_angle> <!-- For 12.5° Field of view -->
+                      <max_angle>0</max_angle> <!-- For 12.5° Field of view -->
                   </vertical>
               </scan>
               <range>
-                  <min>0.08</min>
-                  <max>10.0</max>
-                  <resolution>0.01</resolution>
+                  <min>0.11</min>
+                  <max>8.0</max>
+                  <resolution>0.001</resolution>
               </range>
           </ray>
           <always_on>1</always_on>
           <visualize>true</visualize>
       </sensor>
 
+      <visual name="altimeter_marker">
+        <pose relative_to='altimeter_frame' degrees='true'>0 0 0 0 90 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.025</length>
+            <radius>0.01</radius>
+          </cylinder>
+        </geometry>
+        <material>
+          <ambient>0 0 0 1</ambient>
+          <diffuse>0 0 0 1</diffuse>
+          <emissive>0 0 0 1</emissive>
+        </material>
+      </visual>
+
       <sensor name='oa_sensor' type='gpu_lidar'>"
-          <pose relative_to='oa_sensor_frame'>0 0 0 0 0 0</pose>
+          <pose relative_to='oa_sensor_frame' degrees='true'>0 0 0 0 0 0</pose>
           <topic>model/orca4_heavy/oa_sensor</topic>
           <update_rate>10</update_rate>
           <ray>
@@ -85,25 +100,41 @@
                   <horizontal>
                       <samples>25</samples>
                       <resolution>1</resolution>
-                      <min_angle>-0.21</min_angle>
-                      <max_angle>0.21</max_angle>
+                      <min_angle>-0.11</min_angle> <!-- For 12.5° Field of view -->
+                      <max_angle>0.11</max_angle> <!-- For 12.5° Field of view -->
                   </horizontal>
                   <vertical>
                       <samples>25</samples>
                       <resolution>1</resolution>
-                      <min_angle>-0.21</min_angle>
-                      <max_angle>0.21</max_angle>
+                      <min_angle>-0.11</min_angle> <!-- For 12.5° Field of view -->
+                      <max_angle>0.11</max_angle> <!-- For 12.5° Field of view -->
                   </vertical>
               </scan>
               <range>
-                  <min>0.08</min>
-                  <max>100.0</max>
-                  <resolution>0.01</resolution>
+                  <min>0.11</min>
+                  <max>8.0</max>
+                  <resolution>0.001</resolution>
               </range>
           </ray>
           <always_on>1</always_on>
           <visualize>true</visualize>
       </sensor>
+
+      <!-- Debug marker: shows oa_sensor position and boresight direction (points along local +X) -->
+      <visual name="oa_sensor_marker">
+        <pose relative_to='oa_sensor_frame' degrees='true'>0 0 0 0 90 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.025</length>
+            <radius>0.02</radius>
+          </cylinder>
+        </geometry>
+        <material>
+          <ambient>0 0 0 1</ambient>
+          <diffuse>0 0 0 1</diffuse>
+          <emissive>0 0 0 1</emissive>
+        </material>
+      </visual>
 
     <sensor name="navsat" type="navsat">
       <pose relative_to='navsat_frame'>0 0 0 0 0 0</pose>
@@ -713,11 +744,11 @@
     </plugin>
 
     <frame name="altimeter_frame" attached_to='base_link'>
-        <pose>0 0 -0.25 0 1.5708 0</pose>
+        <pose degrees="true">0.05 -0.15 -0.1 0 90.0 0</pose>
     </frame>
 
     <frame name="oa_sensor_frame" attached_to='base_link'>
-        <pose>0.15 0 -0.25 0 0.785 0</pose>
+        <pose degrees="true">0.15 0 -0.1 0 45.0 0</pose>
     </frame>
 
     <frame name="navsat_frame" attached_to='base_link'>
